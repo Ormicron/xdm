@@ -34,6 +34,8 @@ public class HttpChannel extends AbstractChannel {
 	protected boolean redirected;
 	protected String redirectUrl;
 
+	public static String userAgent = "Mozilla/5.0 (Linux; U; Android 10; zh-cn; MIX 2S Build/QKQ1.190828.002) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/71.0.3578.141 Mobile Safari/537.36 XiaoMi/MiuiBrowser/11.8.14";
+
 	public HttpChannel(Segment chunk, String url, HeaderCollection headers, long totalLength,
 			// it may be known from first connection
 			// if java client is required
@@ -44,6 +46,7 @@ public class HttpChannel extends AbstractChannel {
 		this.totalLength = totalLength;
 		this.javaClientRequired = javaClientRequired;
 	}
+
 
 	@Override
 	protected boolean connectImpl() {
@@ -111,6 +114,7 @@ public class HttpChannel extends AbstractChannel {
 
 				long length = chunk.getLength();
 
+				hc.setHeader("User-Agent", this.userAgent);
 				// hc.setHeader("user-agent", "Mozilla/5.0 (Windows NT 10.0;
 				// rv:51.0) Gecko/20100101 Firefox/51.0");
 
