@@ -1,18 +1,19 @@
 package xdman.ui.components;
 
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.LineBorder;
 
+import xdman.downloaders.http.HttpChannel;
 import xdman.ui.res.ColorResource;
 import xdman.ui.res.FontResource;
 import xdman.ui.res.StringResource;
 import xdman.util.FormatUtilities;
+
+import static java.awt.Cursor.HAND_CURSOR;
 import static xdman.util.XDMUtils.getScaledInt;
 public class PropertiesPage extends Page {
 	/**
@@ -23,15 +24,20 @@ public class PropertiesPage extends Page {
 	private JTextField txtDefFile, txtDefFolder, txtUrl, lblReferer;
 	private JLabel lblSize, lblDate, lblType;
 	JTextArea txtCookie;
+	JTextArea txtUserAgent;
+
+	JButton submitBottom;
+
 
 	public void setDetails(String file, String folder, long size, String url, String referer, String date,
-			String cookies, String type) {
+						   String cookies, String userAgent, String type) {
 		this.txtDefFile.setText(file);
 		this.txtDefFolder.setText(folder);
 		this.txtUrl.setText(url);
 		this.lblSize.setText(FormatUtilities.formatSize(size));
 		this.lblDate.setText(date);
 		this.txtCookie.setText(cookies);
+		this.txtUserAgent.setText(userAgent);
 		this.lblType.setText(type);
 		this.lblReferer.setText(referer);
 	}
@@ -39,6 +45,12 @@ public class PropertiesPage extends Page {
 	private PropertiesPage(XDMFrame xframe) {
 		super(StringResource.get("TITLE_PROP"), getScaledInt(350), xframe);
 		initUI();
+	}
+
+
+	public void setRequestHeader(){
+		System.out.println("Set User-Agent:" + txtUserAgent.getText());
+		HttpChannel.userAgent = txtUserAgent.getText();
 	}
 
 	public static PropertiesPage getPage(XDMFrame xframe) {
@@ -164,6 +176,7 @@ public class PropertiesPage extends Page {
 		lblReferer.setBounds(getScaledInt(115), y, getScaledInt(200), h);
 		panel.add(lblReferer);
 		y += h;
+
 		h = getScaledInt(30);
 		JLabel lblCookieTitle = new JLabel(StringResource.get("PROP_COOKIE"));
 		lblCookieTitle.setForeground(Color.WHITE);
@@ -174,6 +187,7 @@ public class PropertiesPage extends Page {
 		y += getScaledInt(10);
 		h = getScaledInt(120);
 
+
 		txtCookie = new JTextArea();
 		txtCookie.setBounds(getScaledInt(15), y, getScaledInt(350) - getScaledInt(50), h);
 		txtCookie.setBorder(new LineBorder(ColorResource.getDarkBtnColor()));
@@ -182,7 +196,46 @@ public class PropertiesPage extends Page {
 		txtCookie.setOpaque(false);
 		panel.add(txtCookie);
 		y += h;
-		y += getScaledInt(50);
+		y += getScaledInt(10);
+
+
+		/* Http Header */
+		h = getScaledInt(30);
+		JLabel lblHttpHeadrTitle = new JLabel("User-Agent");
+		lblHttpHeadrTitle.setForeground(Color.WHITE);
+		lblHttpHeadrTitle.setFont(FontResource.getNormalFont());
+		lblHttpHeadrTitle.setBounds(getScaledInt(15), y, getScaledInt(350) - getScaledInt(30), h);
+		panel.add(lblHttpHeadrTitle);
+		y += h;
+		y += getScaledInt(10);
+		h = getScaledInt(120);
+		/* Http Header Textarea */
+		txtUserAgent = new JTextArea();
+		txtUserAgent.setBounds(getScaledInt(15), y, getScaledInt(350) - getScaledInt(50), h);
+		txtUserAgent.setBorder(new LineBorder(ColorResource.getDarkBtnColor()));
+		txtUserAgent.setEditable(true);
+		txtUserAgent.setForeground(Color.WHITE);
+		txtUserAgent.setOpaque(false);
+		panel.add(txtUserAgent);
+		y += h;
+		y += getScaledInt(10);
+
+		submitBottom = new JButton("Save");
+		submitBottom.setForeground(Color.WHITE);
+		submitBottom.setFont(FontResource.getNormalFont());
+		submitBottom.setBounds(getScaledInt(15), y, getScaledInt(100) - getScaledInt(10), 20);
+		submitBottom.setCursor(Cursor.getPredefinedCursor(HAND_CURSOR));
+		submitBottom.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent e){
+				setRequestHeader();
+			}
+		});
+		panel.add(submitBottom);
+		y += h;
+		y += getScaledInt(10);
+
+
 
 		panel.setPreferredSize(new Dimension(getScaledInt(350), y));
 		panel.setBounds(getScaledInt(0), 0, getScaledInt(350), y);
